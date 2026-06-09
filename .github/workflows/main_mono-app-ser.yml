@@ -3,45 +3,48 @@ name: Deploy Node.js App to Azure Web App
 on:
   push:
     branches:
-      - main # Triggers the workflow on every push to your main branch
+      - main
   workflow_dispatch:
 
 permissions:
-  id-token: write # Mandatory for requesting the secure OIDC JWT token from Azure
-  contents: read  # Mandatory for checking out your repository code
+  id-token: write
+  contents: read
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Fetch the repository files
+      # Checkout repo
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up the Node.js runtime environment (Fixed: removed strict lockfile caching)
-      - name: Set up Node.js
+      # Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
-      # Step 3: Install project dependencies and build assets
-      - name: Install dependencies and build
-        run: |
-          npm install
-          npm run build --if-present
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
 
-      # Step 4: Authenticate with Azure using your verified App Registration
-      - name: Login to Azure
+      # Build (optional)
+      - name: Build app
+        run: npm run build --if-present
+
+      # Azure Login (HARDCODED)
+      - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: 'ae7ad2c1-261b-4fa9-a255-3806d71bddbb'
-          tenant-id: '2c8ec8cc-e229-4568-b011-fbb60ed4385c'
-          subscription-id: 'b74e302a-6b7a-47a5-ad64-fa0a700043e7'
+          client-id: ae7ad2c1-261b-4fa9-a255-3806d71bddbb
+          tenant-id: 2c8ec8cc-e229-4568-b011-fbb60ed4385c
+          subscription-id: b74e302a-6b7a-47a5-ad64-fa0a700043e7
+          allow-no-subscriptions: false
 
-      # Step 5: Deploy your application code to your Azure App Service
-      - name: 'Deploy to Azure Web App'
+      # Deploy to Azure Web App
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'mono-app-ser'
-          package: '.'
+          app-name: mono-app-ser
+          package: .
