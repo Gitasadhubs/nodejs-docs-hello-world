@@ -3,45 +3,45 @@ name: Deploy Node.js App to Azure Web App
 on:
   push:
     branches:
-      - main # Triggers the workflow on pushes to your main branch
+      - main # Triggers the workflow on every push to your main branch
 
 permissions:
-  id-token: write # Required for requesting the JWT/OIDC token from Azure
-  contents: read  # Required for actions/checkout
+  id-token: write # Mandatory for requesting the secure OIDC JWT token from Azure
+  contents: read  # Mandatory for checking out your repository code
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the source code from your repository
+      # Step 1: Fetch the repository files
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js environment
+      # Step 2: Set up the Node.js runtime environment
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-node-version: '20' # Specify your required Node.js version
+          node-version: '20' # Change this if your app targets a different Node version
           cache: 'npm'
 
-      # Step 3: Install dependencies and build project
+      # Step 3: Install project dependencies and build assets
       - name: Install dependencies and build
         run: |
           npm install
           npm run build --if-present
 
-      # Step 4: Login to Azure using OpenID Connect (OIDC)
+      # Step 4: Authenticate with Azure using OpenID Connect (OIDC)
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: 'PASTE_YOUR_NEW_APPLICATION_ID_HERE' # Go to App registrations -> All applications to get this GUID
+          client-id: 'ae7ad2c1-261b-4fa9-a255-3806d71bddbb'
           tenant-id: '2c8ec8cc-e229-4568-b011-fbb60ed4385c'
           subscription-id: 'b74e302a-6b7a-47a5-ad64-fa0a700043e7'
 
-      # Step 5: Deploy the code bundle to your Azure Web App infrastructure
+      # Step 5: Deploy your application code to your Azure App Service
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'YOUR_AZURE_WEBAPP_NAME' # Replace with the exact name of your App Service
+          app-name: 'YOUR_AZURE_WEBAPP_NAME' # Replace with your actual Azure Web App service name
           package: '.'
