@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main # Triggers the workflow on every push to your main branch
+  workflow_dispatch:
 
 permissions:
   id-token: write # Mandatory for requesting the secure OIDC JWT token from Azure
@@ -18,12 +19,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Set up the Node.js runtime environment
+      # Step 2: Set up the Node.js runtime environment (Fixed: removed strict lockfile caching)
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       # Step 3: Install project dependencies and build assets
       - name: Install dependencies and build
@@ -43,5 +43,5 @@ jobs:
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'YOUR_AZURE_WEBAPP_NAME' # Replace with your actual Azure Web App service name
+          app-name: 'mono-app-ser'
           package: '.'
